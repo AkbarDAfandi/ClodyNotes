@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/services.dart';
 
 final supabase = Supabase.instance.client;
 
@@ -41,6 +42,45 @@ class _EditPageState extends State<EditPage> {
     });
   }
 
+  Future<void> _deleteNote() async {
+    bool shouldDelete = false;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Note'),
+          content: const Text('Are you sure you want to delete this note?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Delete'),
+              onPressed: () {
+                shouldDelete = true;
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete) {
+      try {
+        await supabase.from('notes').delete().eq('note_id', widget.noteId);
+        Navigator.of(context).pop();
+      } catch (error) {
+        print('Error deleting note: $error');
+      }
+    }
+  }
+
   Future<void> _updateNote() async {
     setState(() {
       _isSaving = true;
@@ -66,42 +106,53 @@ class _EditPageState extends State<EditPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Note'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed:
+                _deleteNote, // Add a function to handle the delete operation
+          ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  if (_error != null)
-                    Text(
-                      _error!,
-                      style: const TextStyle(color: Colors.red),
+          : Container(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    if (_error != null)
+                      Text(
+                        _error!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    TextField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                      ),
                     ),
-                  TextField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Title',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _contentController,
-                    decoration: const InputDecoration(
-                      labelText: 'Content',
-                    ),
-                    maxLines: 10,
-                  ),
-                  const SizedBox(height: 16),
-                  FloatingActionButton(
-                    onPressed: _isSaving ? null : _updateNote,
-                    child: _isSaving
-                        ? const CircularProgressIndicator()
-                        : const Icon(Icons.save),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    TextField(
+                        controller: _contentController,
+                        decoration: const InputDecoration(
+                          labelText: 'Content',
+                        ),
+                        maxLines: 10,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(1),
+                        ]),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _isSaving ? null : _updateNote,
+        child: _isSaving
+            ? const CircularProgressIndicator()
+            : const Icon(Icons.save),
+      ),
     );
   }
 }

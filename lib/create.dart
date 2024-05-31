@@ -75,7 +75,6 @@ class _CreatePage extends State<CreatePage> {
             await createNote(content, title);
             FocusManager.instance.primaryFocus?.unfocus();
             Navigator.of(context).pop(false);
-            // Navigate back or show a success message
           },
           child: Icon(Icons.save),
         ),

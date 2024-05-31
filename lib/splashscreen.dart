@@ -51,8 +51,8 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset('assets/images/NotesIMG.png',
-              width: 320, // Set the desired width
-              height: 320, // Set the desired height
+              width: 320,
+              height: 320,
               fit: BoxFit.cover,
             ),
             const SizedBox(height: 30,),
@@ -104,8 +104,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 400),
-                      reverseTransitionDuration: const Duration(milliseconds: 400),
+                      transitionDuration: const Duration(milliseconds: 200),
+                      reverseTransitionDuration: const Duration(milliseconds: 200),
                       pageBuilder: (context, animation, secondaryAnimation) {
                         return const SignUp();
                       },
@@ -139,10 +139,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      transitionDuration: const Duration(milliseconds: 400),
-                      reverseTransitionDuration: const Duration(milliseconds: 400),
+                      transitionDuration: const Duration(milliseconds: 200),
+                      reverseTransitionDuration: const Duration(milliseconds: 200),
                       pageBuilder: (context, animation, secondaryAnimation) {
-                        return const SignIn(); // Replace with your SignIn page
+                        return const SignIn();
                       },
                       transitionsBuilder: (context, animation, secondaryAnimation, child) {
                         return SlideTransition(
